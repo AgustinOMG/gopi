@@ -1,14 +1,33 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func getTodos(data *gin.Context) {
-	data.IndentedJSON(http.StatusOK, todos)
+func addPart(data *gin.Context) {
+	station := data.Param("station")
+	id := data.Param("id")
+	dbStation := Client.Database("kayser").Collection(station)
+	var part bson.M
+	err := dbStation.FindOne(context.TODO(), bson.M{"id": id}).Decode(&part)
+	if err != nil {
+		result, err := dbStation.InsertOne(context.TODO(), bson.M{"id": id, "fecha": time.Now(), "estado": "OK"})
+		if err != nil {
+			data.IndentedJSON(http.StatusNotImplemented, gin.H{"mensaje": "Ocurrio un error al momento de registrar la pieza"})
+		} else {
+			data.IndentedJSON(http.StatusOK, result)
+		}
+	} else {
+		data.IndentedJSON(http.StatusAlreadyReported, gin.H{"mensaje": "La Pieza ya ha sido registrada en esta estacion."})
+
+	}
 
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,23 +26,26 @@ var todos = []todo{
 	{Id: "3", Item: "third", Completed: false},
 }
 
+var Client *mongo.Client
+var err error
+
 func main() {
-	// Create a new client and connect to the server
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	// Crear la conexion con el servidor.
+	Client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
-		panic(err)
+		fmt.Print(err)
 	}
 	defer func() {
-		if err = client.Disconnect(context.TODO()); err != nil {
-			panic(err)
+		if err = Client.Disconnect(context.TODO()); err != nil {
+			fmt.Print(err)
 		}
 	}()
 	// Ping the primary
-	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
+	if err := Client.Ping(context.TODO(), readpref.Primary()); err != nil {
+		fmt.Print(err)
 	}
 
-	usersCollection := client.Database("testing").Collection("users")
+	usersCollection := Client.Database("testing").Collection("users")
 	// insert a single document into a collection
 	// create a bson.D object
 	user := bson.D{{"fullName", "User 1"}, {"age", 30}}
@@ -49,13 +53,15 @@ func main() {
 	result, err := usersCollection.InsertOne(context.TODO(), user)
 	// check for errors in the insertion
 	if err != nil {
-		panic(err)
+		fmt.Print(err)
 	}
 	// display the id of the newly inserted object
 	fmt.Println(result.InsertedID)
-
+	// crear el objeto de ruteo para la REST API
 	router := gin.Default()
+	// LLamada a funcion de paso de rutas, el objeto debe ser pasado como un parametro
 	apiRoutes(router)
+	// Corre el servidor, especificar IP y Puerto deseado.
 	router.Run("localhost:9090")
 
 }

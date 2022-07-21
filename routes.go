@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 func apiRoutes(router *gin.Engine) {
 
-	router.GET("/monbai", getTodos)
+	router.POST("/ksr/:station/:id", addPart)
 	router.GET("/monbai/:id", getTodo)
 	router.POST("/monbai", addTodo)
 	router.PATCH("/monbai/:id", toggleTodoStatus)
