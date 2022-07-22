@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -45,18 +44,18 @@ func main() {
 		fmt.Print(err)
 	}
 
-	usersCollection := Client.Database("testing").Collection("users")
+	//usersCollection := Client.Database("testing").Collection("users")
 	// insert a single document into a collection
 	// create a bson.D object
-	user := bson.D{{"fullName", "User 1"}, {"age", 30}}
+	//user := bson.D{{"fullName", "User 1"}, {"age", 30}}
 	// insert the bson object using InsertOne()
-	result, err := usersCollection.InsertOne(context.TODO(), user)
+	//result, err := usersCollection.InsertOne(context.TODO(), user)
 	// check for errors in the insertion
-	if err != nil {
-		fmt.Print(err)
-	}
+	//if err != nil {
+	//fmt.Print(err)
+	//}
 	// display the id of the newly inserted object
-	fmt.Println(result.InsertedID)
+	//fmt.Println(result.InsertedID)
 	// crear el objeto de ruteo para la REST API
 	router := gin.Default()
 	// LLamada a funcion de paso de rutas, el objeto debe ser pasado como un parametro

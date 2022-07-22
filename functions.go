@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,23 +11,23 @@ import (
 )
 
 func addPart(data *gin.Context) {
-	station := data.Param("station")
+
+	stationData := make(map[string]string)
 	id := data.Param("id")
-	dbStation := Client.Database("kayser").Collection(station)
-	var part bson.M
-	err := dbStation.FindOne(context.TODO(), bson.M{"id": id}).Decode(&part)
-	if err != nil {
-		result, err := dbStation.InsertOne(context.TODO(), bson.M{"id": id, "fecha": time.Now(), "estado": "OK"})
-		if err != nil {
-			data.IndentedJSON(http.StatusNotImplemented, gin.H{"mensaje": "Ocurrio un error al momento de registrar la pieza"})
-		} else {
-			data.IndentedJSON(http.StatusOK, result)
-		}
-	} else {
-		data.IndentedJSON(http.StatusAlreadyReported, gin.H{"mensaje": "La Pieza ya ha sido registrada en esta estacion."})
-
+	station := data.Param("station")
+	line := data.Param("line")
+	if err := data.BindJSON(&stationData); err != nil {
+		data.IndentedJSON(http.StatusNotImplemented, gin.H{"mensaje": "Formato de datos incorrecto"})
 	}
-
+	dbStation := Client.Database("kayser").Collection(line)
+	dbStation.InsertOne(context.TODO(), bson.D{{Key: "sn", Value: id}})
+	stationData["station"] = station
+	result, err := dbStation.UpdateOne(context.TODO(), bson.D{{Key: "sn", Value: id}, {Key: "station.station", Value: station}}, bson.D{{Key: "$set", Value: bson.D{{Key: "station", Value: stationData}}}})
+	if err != nil {
+		data.IndentedJSON(http.StatusNotImplemented, gin.H{"mensaje": "Ocurrio un error al momento de registrar la pieza"})
+	} else {
+		data.IndentedJSON(http.StatusOK, result)
+	}
 }
 
 func addTodo(data *gin.Context) {
