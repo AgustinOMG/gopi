@@ -49,6 +49,6 @@ func main() {
 	// LLamada a funcion de paso de rutas, el objeto debe ser pasado como un parametro
 	apiRoutes(router)
 	// Corre el servidor, especificar IP y Puerto deseado.
-	router.Run("localhost:9090")
+	router.Run("0.0.0.0:9090")
 
 }
