@@ -11,19 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-const uri = "mongodb://192.168.1.116:27017"
-
-type todo struct {
-	Id        string `json:"id"`
-	Item      string `json:"item"`
-	Completed bool   `json:"completed"`
-}
-
-var todos = []todo{
-	{Id: "1", Item: "first", Completed: false},
-	{Id: "2", Item: "second", Completed: false},
-	{Id: "3", Item: "third", Completed: false},
-}
+const uri = "mongodb://localhost:27017"
 
 var Client *mongo.Client
 var err error
